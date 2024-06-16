@@ -14,7 +14,7 @@ pub struct Response {
 }
 
 #[derive(Deserialize, Debug)]
-struct Choice {
+pub struct Choice {
     pub index: u32,
     pub message: Message,
 }
@@ -126,10 +126,7 @@ pub async fn send_request(api_key: &str, payload: &Payload) -> Result<Response, 
         .await?;
 
     let response_text = response.text().await?;
-    let response_object: Response = serde_json::from_str(&response_text)?;
+    let response_object = serde_json::from_str(&response_text).unwrap();
 
-    match response_object {
-        Ok(response) => Ok(response),
-        Err(_) => Err(reqwest::Error::new(reqwest::StatusCode::UNPROCESSABLE_ENTITY, "Failed to deserialize response")),
-    }
+    Ok(response_object)
 }
