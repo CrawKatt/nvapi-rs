@@ -128,5 +128,8 @@ pub async fn send_request(api_key: &str, payload: &Payload) -> Result<Response, 
     let response_text = response.text().await?;
     let response_object: Response = serde_json::from_str(&response_text)?;
 
-    Ok(response_object)
+    match response_object {
+        Ok(response) => Ok(response),
+        Err(_) => Err(reqwest::Error::new(reqwest::StatusCode::UNPROCESSABLE_ENTITY, "Failed to deserialize response")),
+    }
 }
