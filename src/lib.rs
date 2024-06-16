@@ -3,18 +3,47 @@ use serde::{Deserialize, Serialize};
 
 const API_URL: &str = "https://integrate.api.nvidia.com/v1/chat/completions";
 
+#[derive(Deserialize, Debug)]
+pub struct Response {
+    pub id: String,
+    pub object: String,
+    pub created: u64,
+    pub model: String,
+    pub choices: Vec<Choice>,
+    pub usage: Usage,
+}
+
+#[derive(Deserialize, Debug)]
+struct Choice {
+    pub index: u32,
+    pub message: Message,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Message {
+    pub role: String,
+    pub content: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Usage {
+    pub prompt_tokens: u32,
+    pub total_tokens: u32,
+    pub completion_tokens: u32,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Payload {
-    model: String,
-    max_tokens: u32,
-    stream: bool,
-    temperature: f64,
-    top_p: f64,
-    frequency_penalty: f64,
-    presence_penalty: f64,
-    seed: Option<u64>,
-    stop: Option<String>,
-    messages: String
+    pub model: String,
+    pub max_tokens: u32,
+    pub stream: bool,
+    pub temperature: f64,
+    pub top_p: f64,
+    pub frequency_penalty: f64,
+    pub presence_penalty: f64,
+    pub seed: Option<u64>,
+    pub stop: Option<String>,
+    pub messages: String
 }
 
 impl Payload {
@@ -86,7 +115,7 @@ impl Default for Payload {
     }
 }
 
-pub async fn send_request(api_key: &str, payload: &Payload) -> Result<String, reqwest::Error> {
+pub async fn send_request(api_key: &str, payload: &Payload) -> Result<Response, reqwest::Error> {
     let client = Client::new();
     let response = client.post(API_URL)
         .json(payload)
@@ -97,5 +126,7 @@ pub async fn send_request(api_key: &str, payload: &Payload) -> Result<String, re
         .await?;
 
     let response_text = response.text().await?;
-    Ok(response_text)
+    let response_object: Response = serde_json::from_str(&response_text)?;
+
+    Ok(response_object)
 }
