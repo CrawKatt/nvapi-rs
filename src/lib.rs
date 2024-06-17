@@ -1,7 +1,94 @@
+use std::fmt;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 const API_URL: &str = "https://integrate.api.nvidia.com/v1/chat/completions";
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum LLModel {
+    #[serde(rename = "aisingapore/sea-lion-7b-instruct")]
+    AiSingaporeSeaLion7BInstruct,
+    #[serde(rename = "databricks/dbrx-instruct")]
+    DatabricksDbrxInstruct,
+    #[serde(rename = "google/gemma-7b")]
+    GoogleGemma7B,
+    #[serde(rename = "google/gemma-2b")]
+    GoogleGemma2B,
+    #[serde(rename = "google/codegemma-1.1-7b")]
+    GoogleCodeGemma1_17B,
+    #[serde(rename = "google/codegemma-7b")]
+    GoogleCodeGemma7B,
+    #[serde(rename = "google/recurrentgemma-2b")]
+    GoogleRecurrentGemma2B,
+    #[serde(rename = "ibm/granite-34b-code-instruct")]
+    IbmGranite34BCodeInstruct,
+    #[serde(rename = "ibm/granite-8b-code-instruct")]
+    IbmGranite8BCodeInstruct,
+    #[serde(rename = "mediatek/breeze-7b-instruct")]
+    MediatekBreeze7BInstruct,
+    #[serde(rename = "meta/codellama-70b")]
+    MetaCodellama70B,
+    #[serde(rename = "meta/llama2-70b")]
+    MetaLlama2_70B,
+    #[serde(rename = "meta/llama3-8b-instruct")]
+    MetaLlama3_8B,
+    #[serde(rename = "meta/llama3-70b-instruct")]
+    MetaLlama3_70B,
+    #[serde(rename = "microsoft/phi-3-medium-4k-instruct")]
+    MicrosoftPhi3Medium4KInstruct,
+    #[serde(rename = "microsoft/phi-3-mini")]
+    MicrosoftPhi3Mini128KInstruct,
+    #[serde(rename = "microsoft/phi-3-mini-4k-instruct")]
+    MicrosoftPhi3Mini4KInstruct,
+    #[serde(rename = "microsoft/phi-3-small-128k-instruct")]
+    MicrosoftPhi3Small128KInstruct,
+    #[serde(rename = "microsoft/phi-3-small-8k-instruct")]
+    MicrosoftPhi3Small8KInstruct,
+    #[serde(rename = "mistralai/mistral-7b-instruct-v0.2")]
+    MistralAiMixtral7BInstruct,
+    #[serde(rename = "mistralai/mixtral-8x7b-instruct-v0.1")]
+    MistralAiMixtral8x7BInstruct,
+    #[serde(rename = "mistralai/mixtral-8x22b-instruct-v0.1")]
+    MistralAiMixtral8x22BInstruct,
+    #[serde(rename = "mistralai/mistral-large")]
+    MistralAiMistralLarge,
+    #[serde(rename = "seallms/seallm-7b-v2.5")]
+    SealLlmsSealllm7BV2_5,
+    #[serde(rename = "snowflake/arctic")]
+    SnowFlakeArctic,
+}
+
+impl fmt::Display for LLModel {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            LLModel::AiSingaporeSeaLion7BInstruct => write!(f, "aisingapore/sea-lion-7b-instruct"),
+            LLModel::DatabricksDbrxInstruct => write!(f, "databricks/dbrx-instruct"),
+            LLModel::GoogleGemma7B => write!(f, "google/gemma-7b"),
+            LLModel::GoogleGemma2B => write!(f, "google/gemma-2b"),
+            LLModel::GoogleCodeGemma1_17B => write!(f, "google/codegemma-1.1-7b"),
+            LLModel::GoogleCodeGemma7B => write!(f, "google/codegemma-7b"),
+            LLModel::GoogleRecurrentGemma2B => write!(f, "google/recurrentgemma-2b"),
+            LLModel::IbmGranite34BCodeInstruct => write!(f, "ibm/granite-34b-code-instruct"),
+            LLModel::IbmGranite8BCodeInstruct => write!(f, "ibm/granite-8b-code-instruct"),
+            LLModel::MediatekBreeze7BInstruct => write!(f, "mediatek/breeze-7b-instruct"),
+            LLModel::MetaCodellama70B => write!(f, "meta/codellama-70b"),
+            LLModel::MetaLlama2_70B => write!(f, "meta/llama2-70b"),
+            LLModel::MetaLlama3_8B => write!(f, "meta/llama3-8b-instruct"),
+            LLModel::MetaLlama3_70B => write!(f, "meta/llama3-70b-instruct"),
+            LLModel::MicrosoftPhi3Medium4KInstruct => write!(f, "microsoft/phi-3-medium-4k-instruct"),
+            LLModel::MicrosoftPhi3Mini128KInstruct => write!(f, "microsoft/phi-3-mini"),
+            LLModel::MicrosoftPhi3Mini4KInstruct => write!(f, "microsoft/phi-3-mini-4k-instruct"),
+            LLModel::MicrosoftPhi3Small8KInstruct => write!(f, "microsoft/phi-3-small-8k-instruct"),
+            LLModel::MistralAiMixtral7BInstruct => write!(f, "mistralai/mistral-7b-instruct-v0.2"),
+            LLModel::MistralAiMixtral8x7BInstruct => write!(f, "mistralai/mixtral-8x7b-instruct-v0.1"),
+            LLModel::MistralAiMixtral8x22BInstruct => write!(f, "mistralai/mixtral-8x22b-instruct-v0.1"),
+            LLModel::MistralAiMistralLarge => write!(f, "mistralai/mistral-large"),
+            LLModel::SealLlmsSealllm7BV2_5 => write!(f, "seallms/seallm-7b-v2.5"),
+            LLModel::SnowFlakeArctic => write!(f, "snowflake/arctic"),
+            _ => write!(f, "Unknown"),
+        }
+    }
+}
 
 #[derive(Deserialize, Debug)]
 pub struct Response {
@@ -19,7 +106,7 @@ pub struct Choice {
     pub message: Message,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Message {
     pub role: String,
     pub content: String,
@@ -43,11 +130,11 @@ pub struct Payload {
     pub presence_penalty: f64,
     pub seed: Option<u64>,
     pub stop: Option<String>,
-    pub messages: String
+    pub messages: Vec<Message>,
 }
 
 impl Payload {
-    pub fn model(&mut self, model: &str) -> &mut Self {
+    pub fn model(&mut self, model: String) -> &mut Self {
         self.model = model.to_string();
         self
     }
@@ -92,8 +179,16 @@ impl Payload {
         self
     }
 
-    pub fn messages(&mut self, messages: &str) -> &mut Self {
-        self.messages = messages.to_string();
+    pub fn messages(&mut self, messages: Message) -> &mut Self {
+        self.messages = vec![messages];
+        self
+    }
+
+    pub fn add_message(&mut self, role: &str, content: &str) -> &mut Self {
+        self.messages.push(Message {
+            role: role.to_string(),
+            content: content.to_string(),
+        });
         self
     }
 }
@@ -101,7 +196,7 @@ impl Payload {
 impl Default for Payload {
     fn default() -> Self {
         Self {
-            model: "mistralai/mixtral-8x7b-instruct-v0.1".to_string(),
+            model: "mistralai/mistral-large".to_string(),
             max_tokens: 1024,
             stream: false,
             temperature: 0.3,
@@ -110,7 +205,10 @@ impl Default for Payload {
             presence_penalty: 0.0,
             seed: None,
             stop: None,
-            messages: "hola".to_string(),
+            messages: vec![Message {
+                role: "system".to_string(),
+                content: "Hello!".to_string(),
+            }],
         }
     }
 }

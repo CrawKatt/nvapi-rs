@@ -1,5 +1,5 @@
 [package]
-name = "plantita_ai"
+name = "nvapi-rs"
 version = "0.1.0"
 edition = "2021"
 
